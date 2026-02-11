@@ -7,6 +7,7 @@
 #include <fcntl.h>      //fcntl
 #include <sys/socket.h> //socket, setsockopt, bind, listen
 #include <netinet/in.h> //sockaddr_in, htons/l, INADDR_ANY
+#include <arpa/inet.h>  //inet_ntoa,
 
 #define MAX_PENDING_CONNECTIONS 128
 
@@ -58,6 +59,20 @@ void Server::setupListeningSocket() {
 	setNonBlocking(_serverFd);
 }
 
-void Server::acceptLoop() {}
+void Server::acceptLoop() {
+	while (true) {
+		sockaddr_in addr;
+		socklen_t addrLen = sizeof(addr);
+		int clientFd = accept(_serverFd, (sockaddr*)&addr, &addrLen);
+		if (clientFd == -1)
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
+				break;
+			die("accpet() failed");
+		std::cout << "clientFD = " << clientFd << std::endl;
+		std::cout << "client adress = " << inet_ntoa(addr.sin_addr) << std::endl;
+		close(clientFd);
+	}
+
+}
 
 void Server::run() {}
