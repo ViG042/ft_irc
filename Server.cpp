@@ -8,6 +8,7 @@
 #include <sys/socket.h> //socket, setsockopt, bind, listen
 #include <netinet/in.h> //sockaddr_in, htons/l, INADDR_ANY
 #include <arpa/inet.h>  //inet_ntoa,
+#include <poll.h>       //poll
 
 #define MAX_PENDING_CONNECTIONS 128
 
@@ -75,4 +76,14 @@ void Server::acceptLoop() {
 
 }
 
-void Server::run() {}
+void Server::run() {
+	setupListeningSocket();
+	struct pollfd fds[1];
+	fds[0].fd = _serverFd;
+	fds[0].events = POLLIN;
+	while (true) {
+		poll(fds, 1, -1);
+		if (fds[0].revents & POLLIN)
+			std::cout << "Data received on fd " << fds[0].fd << std::endl;
+	}
+}
