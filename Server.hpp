@@ -3,6 +3,17 @@
 
 #include <string>
 
+#include <iostream>
+#include <cerrno>       //errno
+#include <cstring>      //strerror, std::memset
+#include <cstdlib>      //exit
+#include <unistd.h>     //close
+#include <fcntl.h>      //fcntl
+#include <sys/socket.h> //socket, setsockopt, bind, listen
+#include <netinet/in.h> //sockaddr_in, htons/l, INADDR_ANY
+#include <arpa/inet.h>  //inet_ntoa,
+#include <poll.h>       //poll
+
 class Server {
 public:
 	Server(int port, const std::string& password);

@@ -1,14 +1,4 @@
 #include "Server.hpp"
-#include <iostream>
-#include <cerrno>       //errno
-#include <cstring>      //strerror, std::memset
-#include <cstdlib>      //exit
-#include <unistd.h>     //close
-#include <fcntl.h>      //fcntl
-#include <sys/socket.h> //socket, setsockopt, bind, listen
-#include <netinet/in.h> //sockaddr_in, htons/l, INADDR_ANY
-#include <arpa/inet.h>  //inet_ntoa,
-#include <poll.h>       //poll
 
 #define MAX_PENDING_CONNECTIONS 128
 
@@ -57,7 +47,9 @@ void Server::setupListeningSocket() {
 	if (listen(_serverFd, MAX_PENDING_CONNECTIONS) == -1)
 		die("listen() failed");
 
-	setNonBlocking(_serverFd);
+	setNonBlocking(_serverFd); ///pourquoi la
+
+
 }
 
 void Server::acceptLoop() {
@@ -65,25 +57,40 @@ void Server::acceptLoop() {
 		sockaddr_in addr;
 		socklen_t addrLen = sizeof(addr);
 		int clientFd = accept(_serverFd, (sockaddr*)&addr, &addrLen);
-		if (clientFd == -1)
+		if (clientFd == -1) {
 			if (errno == EAGAIN || errno == EWOULDBLOCK)
 				break;
-			die("accpet() failed");
+			else
+				die("accept() failed");
+		}
 		std::cout << "clientFD = " << clientFd << std::endl;
 		std::cout << "client adress = " << inet_ntoa(addr.sin_addr) << std::endl;
-		close(clientFd);
+		close(clientFd);//ameliorer
 	}
 
 }
 
 void Server::run() {
 	setupListeningSocket();
+
 	struct pollfd fds[1];
 	fds[0].fd = _serverFd;
 	fds[0].events = POLLIN;
+
 	while (true) {
-		poll(fds, 1, -1);
-		if (fds[0].revents & POLLIN)
+		fds[0].revents = 0;
+		int ret = poll(fds, 1, -1);
+		if (ret == -1) {
+			if (errno == EINTR)
+				continue;
+			else
+				die("poll() failed");
+		}
+		if (fds[0].revents & (POLLHUP | POLLERR | POLLNVAL))
+			die("poll() socket error");
+		if (fds[0].revents & POLLIN) {
+			acceptLoop();
 			std::cout << "Data received on fd " << fds[0].fd << std::endl;
+		}
 	}
 }
