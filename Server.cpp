@@ -5,7 +5,7 @@
 static void die(const std::string& msg) {
 	std::cerr << "Error: " << msg;
 	if (errno != 0)
-		std::cerr << " ()" << std::strerror(errno) << ")";
+		std::cerr << " (errno:" << std::strerror(errno) << ")";
 	std::exit(1);
 }
 
@@ -47,9 +47,7 @@ void Server::setupListeningSocket() {
 	if (listen(_serverFd, MAX_PENDING_CONNECTIONS) == -1)
 		die("listen() failed");
 
-	setNonBlocking(_serverFd); ///pourquoi la
-
-
+	setNonBlocking(_serverFd);
 }
 
 void Server::acceptLoop() {
@@ -65,7 +63,7 @@ void Server::acceptLoop() {
 		}
 		std::cout << "clientFD = " << clientFd << std::endl;
 		std::cout << "client adress = " << inet_ntoa(addr.sin_addr) << std::endl;
-		close(clientFd);//ameliorer
+		close(clientFd);
 	}
 
 }
@@ -90,7 +88,7 @@ void Server::run() {
 			die("poll() socket error");
 		if (fds[0].revents & POLLIN) {
 			acceptLoop();
-			std::cout << "Data received on fd " << fds[0].fd << std::endl;
+			std::cout << "Client accepted on fd " << fds[0].fd << std::endl;
 		}
 	}
 }
