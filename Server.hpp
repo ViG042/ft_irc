@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include <string>
+#include <map>
 
 #include <iostream>
 #include <cerrno>       //errno
@@ -13,6 +14,12 @@
 #include <netinet/in.h> //sockaddr_in, htons/l, INADDR_ANY
 #include <arpa/inet.h>  //inet_ntoa,
 #include <poll.h>       //poll
+
+struct Client {
+	int fd;
+	std::string inBuffer;
+	std::string outBuffer;
+};
 
 class Server {
 public:
@@ -31,6 +38,8 @@ private:
 	int _port;
 	std::string _password;
 	int _serverFd;
+
+	std::map<int, Client> _clients;
 };
 
 #endif
