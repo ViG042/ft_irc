@@ -1,6 +1,8 @@
 #include "Server.hpp"
 
-#define MAX_PENDING_CONNECTIONS 128
+#ifndef MAX_PENDING_CONNECTIONS
+# define MAX_PENDING_CONNECTIONS 128
+#endif
 
 static void die(const std::string& msg) {
 	std::cerr << "Error: " << msg;
