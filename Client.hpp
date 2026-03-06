@@ -10,3 +10,5 @@ struct Client {
 	std::string inBuffer;
 	std::string outBuffer;
 };
+
+#endif

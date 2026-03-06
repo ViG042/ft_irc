@@ -1,23 +1,12 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include "Client.hpp"
 # include <string>
 # include <poll.h>
 # include <vector>
 # include <map>
-
-
-////->> a mettre dans Serveur.cpp
-#include <iostream>
-#include <cerrno>       //errno
-#include <cstring>      //strerror, std::memset
-#include <cstdlib>      //exit
-#include <unistd.h>     //close
-#include <fcntl.h>      //fcntl
-#include <sys/socket.h> //socket, setsockopt, bind, listen
-#include <netinet/in.h> //sockaddr_in, htons/l, INADDR_ANY
-#include <arpa/inet.h>  //inet_ntoa,
-#include <poll.h>       //poll
+# include <stdexcept>
 
 class Server {
 	public:
@@ -29,19 +18,27 @@ class Server {
 		Server(const Server &other);
 		Server &operator=(const Server &other);
 
-		void setupListeningSocket();
+		//ServerConf.cpp
+		void initPollSet();
+static std::runtime_error runtimeError(const std::string &explain);
 		void setNonBlocking(int fd);
-		void acceptLoop();
-		void handleClientRead(int fd);/////////////////
-		void removeClient(int fd);/////////////////////
-		bool isFatalPollEvent(short revents) const;////
+		void setupListeningSocket();
+		//ClientAccept.cpp
+		void clientAccept();
+		//ClientAddRemove.cpp
+		void addClient(int fd);
+		void removeClient(int fd);
+		//PollEvent.cpp
+		bool isFatalPollEvent(short revents) const;
+		void pollEvent(size_t &i);
+		//ClientIO.cpp
+		void clientRead(int fd);
 
 		int _port;
 		std::string _password;
 		int _serverFd;
-
-		std::vector<struct pollfd> _pfds;//////////////
-		std::map<int, Client> _clients;////////////////
+		std::vector<struct pollfd> _pfds;
+		std::map<int, Client> _clients;
 };
 
 #endif

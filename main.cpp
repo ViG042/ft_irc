@@ -7,11 +7,11 @@
 static int parsePort(const char *s) {
 	std::istringstream iss(s);
 	int port = 0;
-	if (!(iss >> port) || !(iss.eof())
+	if (!(iss >> port) || !(iss.eof()))
 		throw std::runtime_error("Port must be an integer");
 	const int MAX_TCP_PORT = (1 << 16) - 1;
 	if (port < 1 || port > MAX_TCP_PORT)
-		throw std::runtime_error("Port range is 1-65535")
+		throw std::runtime_error("Port range is 1-65535");
 	return port;
 }
 

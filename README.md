@@ -4,9 +4,9 @@ IRC = Internet Relay Chat
 #include <pollfd>
 
 structpollfd {
-  int fd;          //_serverFd
-  short events;    //events a surveiller
-  short revents;   //events survenus
+	int fd;          //_serverFd
+	short events;    //events a surveiller
+	short revents;   //events survenus
 };
 
 POLLIN = pret a lire
@@ -16,3 +16,12 @@ fds = tableau de pollfd
 nfds = nombre d'elements
 timeout: -1 = indefiniment, 0 = ne pas attendre, >0 = X millisecondes
 ------------------------------------------
+
+struct sockaddr_in {
+	sa_family_t    sin_family;
+	in_port_t      sin_port;
+	struct in_addr sin_addr;
+};
+
+
+
