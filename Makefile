@@ -4,7 +4,7 @@ CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 DEPFLAGS = -MMD
 
-SRCS = main.cpp ServerConf.cpp ClientAccept.cpp PollEvent.cpp ServerRun.cpp ClientAddRemove.cpp ClientIO.cpp
+SRCS = main.cpp ServerConf.cpp PollEvent.cpp ServerRun.cpp ClientAddRemove.cpp ClientIO.cpp ClientGetters.cpp
 OBJS = $(SRCS:.cpp=.o)
 DEPS = $(OBJS:.o=.d)
 
@@ -24,6 +24,6 @@ fclean: clean
 
 re: fclean all
 
--PHONY: all clean fclean re
+.PHONY: all clean fclean re
 
 -include $(DEPS)

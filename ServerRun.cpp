@@ -1,14 +1,13 @@
 #include "Server.hpp"
 #include <stdexcept>
-#include <iostream>
 #include <cerrno>
 #include <unistd.h> //close
 
 Server::Server(int port, const std::string &password) :	_port(port), _password(password), _serverFd(-1) {}
 
 Server::~Server() {
-	for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
-	{
+	for (std::map<int, Client>::iterator it = _clients.begin(); 
+	it != _clients.end(); ++it) {
 		close(it->first);
 	}
 	if (_serverFd != -1)

@@ -1,8 +1,7 @@
 #include "Server.hpp"
 #include <iostream>
 #include <sstream>
-#include <string>
-#include <stdexcept>
+#include <signal.h>
 
 static int parsePort(const char *s) {
 	std::istringstream iss(s);
@@ -22,10 +21,13 @@ static void parseArgs(int argc, char **argv,
 	port = parsePort(argv[1]);
 	password = argv[2];
 	if (password.empty())
-		throw std::runtime_error("Password must not be empy");
+		throw std::runtime_error("Password must not be empty");
 	}
 
 int main(int argc, char **argv) {
+	//Ignorer SIGPIPE pour eviter que send() sur une socket fermee
+	//termine le programme
+	signal(SIGPIPE, SIG_IGN);
 	try {
 	int port;
 	std::string password;

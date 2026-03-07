@@ -1,6 +1,4 @@
 #include "Server.hpp"
-#include <string>
-#include <stdexcept>    //std::runtime_error
 #include <cerrno>       //errno
 #include <cstring>      //std::strerror, std::memset
 #include <fcntl.h>      //fcntl, O_NONBLOCK
@@ -11,8 +9,8 @@
 # define MAX_PENDING_CONNECTIONS 128
 #endif
 
-std::runtime_error Server::runtimeError(const std::string &explain) {
-	return std::runtime_error(explain + ": " + strerror(errno));
+std::runtime_error Server::runtimeError(const std::string &mess) {
+	return std::runtime_error(mess + ": " + std::strerror(errno));
 }
 
 void Server::initPollSet() {
@@ -38,12 +36,9 @@ static sockaddr_in buildListenAddrIPv4(int port) {
 }
 
 void Server::setNonBlocking(int fd) {
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw runtimeError("fcntl(F_GETFL) failed");
-
-	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw runtimeError("fcntl(F_SETFL) failed");
+	if(fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+		throw Server::runtimeError("fcntl(F_SETFL) failed");
+	}
 }
 
 void Server::setupListeningSocket() {
@@ -63,6 +58,6 @@ void Server::setupListeningSocket() {
 
 	if (listen(_serverFd, MAX_PENDING_CONNECTIONS) == -1)
 		throw runtimeError("listen() failed");
-
+	//set non blocking
 	setNonBlocking(_serverFd);
 }
